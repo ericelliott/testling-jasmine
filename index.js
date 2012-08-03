@@ -62,3 +62,9 @@ function spyOn (obj, name) {
         }
     }
 }
+
+function beforeEach () {
+}
+
+function afterEach () {
+}
