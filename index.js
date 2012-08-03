@@ -1,37 +1,64 @@
-var test = require('testling');
+var _testling = require('testling');
+var _suite;
+var _test;
+var _queue;
 
-module.exports = function (suite, cb) {
-    var context = {};
-    
-    context.it = function (desc, cb) {
-        test(suite + ':' + desc, function (t) {
-            createTest(t, cb);
-        });
-    };
-    
-    callWith(context, cb);
-};
-
-function createTest (t, cb) {
-    var context = {};
-    context.expect = function (value) {
-        return {
-            toBeDefined : function () {
-                t.ok(value !== undefined);
-            }
-        }
-    };
-    callWith(context, cb);
-    t.end();
+function describe (suite, cb) {
+    _suite = suite;
+    cb();
 }
 
-function callWith (context, cb) {
-    var vars = [], args = [];
-    for (var key in context) {
-        vars.push(key);
-        args.push(context[key]);
-    }
+function it (desc, cb) {
+    _queue = [];
+    _testling(_suite + ':' + desc, function (t) {
+        _test = t;
+        cb();
+        t.end();
+    });
+}
+
+function expect (value) {
+    return {
+        toBeDefined : function () {
+            _test.ok(value !== undefined);
+        },
+        toBeTruthy : function () {
+            _test.ok(value);
+        },
+        toEqual : function (x) {
+            _test.equal(value, x);
+        },
+        toHaveBeenCalled : function () {
+            
+        }
+    };
+}
+
+function waitsFor (cb) {
+    setInterval(function () {
+        if (cb()) {
+            var xs = _queue.splice(0);
+            for (var i = 0; i < xs.length; i++) {
+                xs[i]();
+            }
+        }
+    }, 100);
+}
+
+function runs (cb) {
+    _queue.push(cb);
+}
+
+function spyOn (obj, name) {
+    var original = obj[name];
+    var callThrough = false;
     
-    var fn = Function(vars, '(' + cb + ')()');
-    return fn.apply(null, args);
+    obj[name] = function () {
+        
+    };
+    return {
+        andCallThrough : function () {
+            callThrough = true;
+        }
+    }
 }
