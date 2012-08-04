@@ -1,58 +1,68 @@
 var _testling = require('testling');
 var push = require('/push');
-var _suite;
 var _test;
-var _queue;
-
-function log (msg) {
-    push('log', {message: msg});    
-}
+var _testDesc;
 
 function describe (suite, cb) {
-    _suite = suite;
-    cb();
+    _testling(suite, function (t) {
+        _test = t;
+        t.queue = [];
+        cb();
+        if (!t._pending) t.end();
+    });
 }
 
 function it (desc, cb) {
-    _queue = [];
-    _testling(_suite + ':' + desc, function (t) {
-        _test = t;
-        cb();
-        t.end();
-    });
+    if (_test._pending) {
+        return _test.queue.push(function () {
+            it(desc, cb);
+        });
+    }
+    _testDesc = desc;
+    cb();
 }
 
 function expect (value) {
     return {
         toBeDefined : function () {
-            _test.ok(value !== undefined);
+            _test.ok(value !== undefined, _testDesc);
         },
         toBeTruthy : function () {
-            _test.ok(value);
+            _test.ok(value, _testDesc);
         },
         toEqual : function (x) {
-            _test.equal(value, x);
+            _test.equal(value, x, _testDesc);
         },
         toHaveBeenCalled : function () {
-            
+            // ...
         }
     };
 }
 
 function waitsFor (cb) {
-    setInterval(function () {
+    var test = _test;
+    test._pending = true;
+    
+    var iv = setInterval(function () {
         if (cb()) {
-            log('cb returned true');
-            var xs = _queue.splice(0);
+            clearInterval(iv);
+            
+            _test = test;
+            test._pending = false;
+            
+            var xs = test.queue.splice(0);
             for (var i = 0; i < xs.length; i++) {
                 xs[i]();
             }
+            
+            if (test.queue.length === 0) test.end();
         }
     }, 100);
 }
 
 function runs (cb) {
-    _queue.push(cb);
+    if (_test._pending) _test.queue.push(cb);
+    else cb();
 }
 
 function spyOn (obj, name) {
