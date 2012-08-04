@@ -3,7 +3,7 @@
 cat \
     <(echo 'exports=undefined;') \
     <(echo '(function () {') \
-    index.js example/test.js \
+    index.js example/asynctest.js \
     <(echo '}).call(window)') \
     > bundle.js
 
