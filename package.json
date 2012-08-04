@@ -1,6 +1,6 @@
 {
     "name" : "testling-jasmine",
-    "version" : "0.0.1",
+    "version" : "0.0.2",
     "description" : "run jasmine tests in all the browsers with testling",
     "bin" : {
         "testling-jasmine": "bin/cmd.js"
@@ -12,7 +12,8 @@
         "request" : "~2.10.0",
         "deepmerge" : "~0.2.5",
         "read" : "~0.1.1",
-        "optimist" : "~0.3.4"
+        "optimist" : "~0.3.4",
+        "syntax-error" : "~0.0.0"
     },
     "repository" : {
         "type" : "git",

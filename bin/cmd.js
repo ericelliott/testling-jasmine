@@ -6,6 +6,7 @@ var fs = require('fs');
 var path = require('path');
 var deepMerge = require('deepmerge');
 var read = require('read');
+var checkSyntax = require('syntax-error');
 
 var argv = require('optimist').argv;
 var files = [ __dirname + '/../browser.js' ].concat(argv._)
@@ -21,13 +22,24 @@ if (files.js.length === 1) {
         'Usage: testling-jasmine OPTIONS [json files, test files]'
     );
 }
+var sources = files.js.map(function (file) {
+    return fs.readFileSync(file, 'utf8');
+});
+
+var ok = sources.every(function (src, ix) {
+    var err = checkSyntax(src, files.js[ix]);
+    if (err) {
+        console.error(err);
+        return false;
+    }
+    return true;
+});
+if (!ok) process.exit(1);
 
 var body = [
     'exports=undefined',
     '(function () {',
-    files.js.map(function (file) {
-        return fs.readFileSync(file, 'utf8');
-    }).join(';\n'),
+    sources.join(';\n'),
     '}).call(window)',
 ].join(';\n');
 
