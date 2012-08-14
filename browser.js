@@ -1,11 +1,15 @@
 var _testling = require('testling');
 var push = require('/push');
 var _test;
+var _before;
+var _after;
 var _testDesc;
 
 function describe (suite, cb) {
     _testling(suite, function (t) {
         _test = t;
+        _before = [];
+        _after = [];
         t.queue = [];
         cb();
         if (!t._pending) t.end();
@@ -27,13 +31,55 @@ function expect (value) {
         toBeDefined : function () {
             _test.ok(value !== undefined, _testDesc);
         },
+        toBeUndefined : function () {
+            _test.ok(value === undefined, _testDesc);
+        },
+        toBe : function(x) {
+            _test.strictEqual(value, x, _testDesc);
+        },
+        notToBe : function(x) {
+            _test.notStrictEqual(value, x, _testDesc);
+        },
+        toBeNull : function () {
+            _test.ok(value === null, _testDesc);
+        },
         toBeTruthy : function () {
             _test.ok(value, _testDesc);
+        },
+        toBeFalsy : function () {
+            _test.notOk(value, _testDesc);
         },
         toEqual : function (x) {
             _test.equal(value, x, _testDesc);
         },
+        toBeLessThan : function(x) {
+            _test.ok(value < x, _testDesc);
+        },
+        toBeGreaterThan : function(x) {
+            _test.ok(value > x, _testDesc);
+        },
+        toThrow : function(x) {
+            _test(value, x, _testDesc);
+        },
+        toContain : function(x) {
+            // ...
+        },
+        toBeCloseTo : function(x) {
+            // ...
+        },
+        toNotContain : function(x) {
+            // ...
+        },
         toHaveBeenCalled : function () {
+            // ...
+        },
+        toHaveBeenCalledWith : function () {
+            // ...
+        },
+        wasNotCalledWith : function () {
+            // ...
+        },
+        wasNotCalled : function() {
             // ...
         }
     };
@@ -79,8 +125,10 @@ function spyOn (obj, name) {
     }
 }
 
-function beforeEach () {
+function beforeEach (cb) {
+    _before.splice(0, 0, cb);
 }
 
-function afterEach () {
+function afterEach (cb) {
+    _after.splice(0, 0, cb);
 }
