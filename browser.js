@@ -1,15 +1,13 @@
 var _testling = require('testling');
 var push = require('/push');
 var _test;
-var _before;
-var _after;
 var _testDesc;
 
 function describe (suite, cb) {
     _testling(suite, function (t) {
         _test = t;
-        _before = [];
-        _after = [];
+        t._before = [];
+        t._after = [];
         t.queue = [];
         cb();
         if (!t._pending) t.end();
@@ -23,7 +21,15 @@ function it (desc, cb) {
         });
     }
     _testDesc = desc;
+    
+    var i;
+    for (i = 0; i < _test._before.length; i++) {
+        _test._before[i]();
+    }
     cb();
+    for (i = 0; i < _test._after.length; i++) {
+        _test._after[i]();
+    }
 }
 
 function expect (value) {
@@ -126,9 +132,13 @@ function spyOn (obj, name) {
 }
 
 function beforeEach (cb) {
-    _before.splice(0, 0, cb);
+    if (_test) {
+        _test._before.splice(0, 0, cb);
+    }
 }
 
 function afterEach (cb) {
-    _after.splice(0, 0, cb);
+    if (_test) {
+       _test._after.splice(0, 0, cb);
+    }
 }
