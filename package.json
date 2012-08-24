@@ -1,6 +1,6 @@
 {
     "name" : "testling-jasmine",
-    "version" : "0.0.2",
+    "version" : "0.0.3",
     "description" : "run jasmine tests in all the browsers with testling",
     "bin" : {
         "testling-jasmine": "bin/cmd.js"

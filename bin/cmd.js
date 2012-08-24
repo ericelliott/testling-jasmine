@@ -37,6 +37,7 @@ var ok = sources.every(function (src, ix) {
 if (!ok) process.exit(1);
 
 var body = [
+    'module=undefined',
     'exports=undefined',
     '(function () {',
     sources.join(';\n'),
