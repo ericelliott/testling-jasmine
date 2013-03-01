@@ -1,3 +1,7 @@
+# /!\ deprecated /!\
+
+instead just use [this jasmine TAP reporter](https://github.com/substack/testling-jasmine/issues/3)
+
 # testling-jasmine
 
 Run jasmine tests in all the browsers with testling.
